@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Te-hosalama</title>
+    <!-- Intégration de Bootstrap -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+  padding: 20px;
+  background-image:url('FLEURS.jpg');
+  background-size:cover;
+  background-position:center;
+        }
+		.container{
+			background-color:rgba(255,255,255,0.75);
+			border-radius:10px;
+		}
+		h2
+		{
+			background-color:rgba(030,210,250,0.85);
+			border-radius:10px;
+			padding:8px;
+			color:white;
+		}
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>TE-HOSALAMA</h2>
+        <form>
+            <div class="form-group">
+                <label for="searchInput" style="font-style:italic;font-weight:bold;">Inona ny aretina mahazo anao?</label>
+                <input type="text" class="form-control" id="searchInput" placeholder="soraty eto ny  anaran'ny aretina ...">
+            </div>
+        </form>
+
+        <div id="resultContainer">
+            <h3 style="color:teal;">Ny fanafody sy ny fomba fikarakarana azy</h3>
+ <ul id="resultList" class="list-group">
+                <!-- Les résultats seront affichés ici -->
+            </ul>
+ </div>
+    </div>
+
+    <!-- Intégration de jQuery et Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        // Liste des médicaments pour différents types de maladies
+        const medicaments = {
+            "Kohaka sy sery": [
+                "RAVINA PIBASY: maka ravina pibasy 5 na 7  mbola maintso tsara, ampangotrahina amin'ny rano 1L ary sotroy matetika mandritra ny tontolo andro. Raha misy ambiny dia tsy azo ampiasaina rahampitso intsony. Tohizana mandritra ny 5 andro ny fisotroana izany fa manala kohaka na gripa na sery",
+				"SIRA SY RANO MANGOTRAKA: mampangotraka rano tapa-vilany, asio sira betsaka ary tsy sokafana intsony fa avela hangotraka tsara, batao hiala amin'ny fatana ary ievohana amin'izay.",
+                "TONGOLOBE SY TANTELY: maka tongolo oignon dia tetehina boribory manify ary ataovy anaty kaopy, dia raraho tantely eo amboniny, sarony tsy ho azon'ny vovoka.Raha manana frigo ianao dia ataovy ao mandritra ny 2 ora eo ho eo, raha tsy misy frigo moa dia atao amin'ny toerana mangatsitsika mba hitera-drano, alaina lay rano dia sotroina 1 sotro ,maraina, antoandro, hariva. Sotro kely raha zazakely.",
+                "SAKAMALAO: (ho an'ny olon-dehibe ihany) Tsakoina ny sakamalao, dia alona ao ambava. Tsy ny kohaka ihany no afany fa mamono otrik'aretina no sady manadio ra, mahatsara vavony sy tsinay.",
+				"VOASARYMAKIRANA + TANTELY + RANO:  Afatra ny ranom-boasary makirana, dia izay fatran'iny no fatran'ny rano sy tantely. Sotroina isan'andro, 1 sotro olon-dehibe, raha zazakely dia 1 sotro kely isaky ny mihinana.",
+				"HODIM-BOASARY: Miaro amin'ny sery sy gripa ary ny aretin-tratra izy ity satria ahitana otrikaina sokajy C sy A bebe kokoa ny nofony, atao dite dia ampiana tantely kely dia iny sotroina.",
+				"DILOILO COCO: Orina amin'ny diloilo coco mafana kely, ahosotra amin'ny tratra sy ny lamosina, dia somary avokona ny totohondry, orina kely atao mihodidina ny tratra sy lamosina",
+				"NAVET: ny voany fotsy iny no ilaina, sasao tsara dia teteho manify kely, ampio siramamy be eo amboniny, saromana tsara, hitera-drano iny avy eo dia alaivo ilay ranony ary sotroina maraina, antoandro, hariva, 1 sotro isaky ny mihinana",
+				
+		   ],
+            "Fanaviana": [
+                "RAVINA PAPAY: maka ravina papay 4, ampangotraho @ rano 2L, rehefa mangotraka ela ela kely dia batao, evohy ny ranony",
+                "CELERI: maka celeri 1 fehezana kely, ampangotrho @ rano 1L, sotroy mafana arak'izay zakanao mba hampidina ny hafanana",
+                "RAHA ZAZAKELY MAFANA ODITRA: asio tongolo gasy ny orony, ny foitrany, ny handriny mba tsy hiakatra be loatra ny hafanana. Asio lamba misy vinaigitra ny handriny, ny hatony, ny tongony sy ny tanany",
+            ],
+            "Aretin-kibo": [
+                "RAHA MITOHANA: Aza mihinana ny vokatra vita @ ronono, ny siramamy voahodina toy ny kobam-barimbazaha, ny katsaka voatoto, zava-pisotro misy gaz. Ireto kosa no tokony hohanina betsaka: paoma, poara, menaka avy @ trondro, hanitra sakamalao.",
+                "RAHA MIVALANA BE: (Safidy 01)Maka tany fotsy sy tantely 1 sotro fihinana, afangaroy, dia iny no hano mba hampizanona vetivety ny fivalanana. (Safidy02) rano avy ampangotrahina 1L, voasary makirana 1, siramamy 8 sotro, sira 1 sotro, karibonetra 1 tsongo, afangaroy tsara dia sotroy matetika mba hampijanona ny fivalanana vetivety. Aza mihinana sakafo feno fibre toy ny  laisoa, voasary,... ",
+                "RAHA MISY RIVOTRA NY KIBO: Hafanao amin'ny labozia ny tananao, asiana diloilo kely, dia hosory eo amin'ny kibo (tsy atao @ foitra), ataovy isaky ny hariva. Andrahoy amin'ny rano ny akondro voatetika madinika, rehefa mangotraka kely dia tatavano, ary sotroy mafana ilay ranony.",
+            ],
+			"Aretin-tenda": [
+			"VOASARY MAKIRANA SY TANTELY: Afangaroy ny ranona voasary makirana sy tantely dia iny no hohanina. Raha toa ka efa nivadika ho BRONCHITIS ilay izy dia rano mamay nomamiana tantely iray sotro sy ranom-boasary makirana 3 sotro, io no sotroina in-2 isan'andro tsy miaraka @ sakafo mandritra ny 2 herinandro.",
+			"GARARAKA RANON-TSIRA: rano matimaty, ampiana sira dia iny no atao gararaka maraina, antoandro, hariva.",
+			],
+			
+			"Krampy": [
+			"SOJA: mihinana ronono soja, na sakafo vita @ soja satria ny soja dia manome otrikaina be, calcium sy vitamine",
+			"TSARAMASO MENA: ny tsaramaso mena dia manamafy ny taolana",
+			"TANTELY: Mihinana tantely 2 sotrokely 2 ora mialohan'ny sakafo maraina, antoandro, hariva.",
+			],
+			"Havizanana-be": [
+			"Maka vera lehibe iray, fenoina ranom-boasary ny antsasaky ny vera, ampio tamenak'atody 1 sy tantely 1 sotro fihinana, afangaroy tsara dia iny no sotroina.",
+			],
+			"Aretim-bavony": [
+			"PAPAY: Mihinana papay betsaka sy matetika, tena manasitrana vavony ity voankazo iray ity.",
+			"OVY: Maka ovy fotsy fanendy iray, diovy tsara, dia voasy, kikiso dia fihazo mba ahazoana ranony avy eo, dia ilay ranony no sotroina 1 sotro isaky ny maraina vao mifoha",
+			"RAVITOTO: fihazo ny ravitoto vao avy nototoina hahazoana ranony 1 sotrokely, ampio tantely 1 sotro kely, afangaro tsara dia sotroy mandritra ny 5 andro, alohan'ny sakafo maraina.",
+			"TALAPETRAKA: tanihina @ rano 1 L ny iray fehezana, dia atao rano fisotro",
+			"FAKANA VONENINA (Pervance): alona ela ela anaty rano vao nangotraka dia sotroina arak'izay hitiavanao azy",
+			"MANANASY: hoanina aorian'ny sakafo.",
+			"RAHA MISY RIVOTRA NY VAVONY: maka charbon (kininina), dia totoy halemy tsara eran'ny sotro lehibe, asio rano sy siramamy dia sotroy.",
+			],
+			
+			"Aretinaty": [
+			"BETERAVY ATAO JUS",
+			"MISOTRO RANO BETSAKA",
+			"VOASARY MAKIRANA",
+			],
+			"Fiakarana-Tosi-dra": [
+			"BARANJELY: Ity legioma ity dia mety @ olona miakatra tosi-dra. Mikoja ny lalan-dra sy ny fo ihany koa izy",
+			"TONGOLO GASY SY VOASARY MAKIRANA",
+			"RAVINALA: Maka ravinala iray fehezana kely, tapaho eo amin'ilay tahony manakaiky ny raviny iny, ampangotrahy ami'ny rano 1L, rehefa mangotraka ela ela dia bataina, avela hangatsiaka, dia sotroina mandritra ny 3 andro maraina, antoandro, hariva, 1 vera isaky ny misotro. Afaka 7 andro indray vao averina",
+			],
+			"Fidinana-Tosi-dra": [
+			"ANAMAMY: Tanihina @ rano 1L ny anamamy 1 fehezana, avela hangotraka dia sotroina matetika mandritra ny tontolo andro",
+			"RANOMBOALOBOKA",
+			"BETIRAVY",
+			],
+			"Anemie": [
+			"JUS de BETTERAVE sy JUS de POMME",
+			"SEZAME",
+			"EPINARDS",
+			"VOATABIA",
+			"PERSIL",
+			"LEGIOMA",
+			],
+            // Ajoutez plus de catégories ici
+        };
+
+// Fonction de recherche
+        document.getElementById('searchInput').addEventListener('input', function () {
+            const query = this.value.toLowerCase(); // Récupérer la requête de recherche
+            const resultList = document.getElementById('resultList'); // Liste des résultats
+
+            // Effacer les anciens résultats
+			resultList.innerHTML = '';
+
+            // Si la recherche est vide, ne rien afficher
+            if (query === '') {
+                return;
+            }
+
+            // Parcourir les catégories dans l'objet 'medicaments'
+            let foundResults = false;
+            for (const key in medicaments) {
+                if (medicaments.hasOwnProperty(key) && key.toLowerCase().includes(query)) {
+                    foundResults = true;
+                    const categoryItem = document.createElement('li');
+ categoryItem.classList.add('list-group-item');
+                    categoryItem.classList.add('list-group-item-info');
+                    categoryItem.textContent = [key];
+
+                    resultList.appendChild(categoryItem);
+
+                    // Parcourir les médicaments associés à cette catégorie
+                    medicaments[key].forEach(med => {
+                        const item = document.createElement('li');
+                        item.classList.add('list-group-item');
+                        item.textContent = med;
+                        resultList.appendChild(item);
+                    });
+                }
+            }
+
+            // Si aucun résultat trouvé
+            if (!foundResults) {
+			const noResultItem = document.createElement('li');
+                noResultItem.classList.add('list-group-item');
+                noResultItem.classList.add('text-danger');
+                noResultItem.textContent = "Miala tsiny! Tsy hitako izay fanafody ho an'ny aretinao. Avereno soratana mazava tsara(ohatra: kohaka).";
+                resultList.appendChild(noResultItem);
+            }
+        });
+    </script>
+
+</body>
+
+</html>
